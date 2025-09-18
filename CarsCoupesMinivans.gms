@@ -27,27 +27,27 @@ September 15, 2015
 $offtext
 
 * 1. DEFINE the SETS
-SETS plnt crops growing /Eggplant, Tomatoes/
-     res resources /Water, Land, Labor/;
+SETS vhcl crops growing /Coupes, Minivans/
+     res resources /Metal, CircBds, Labor/;
 
 * 2. DEFINE input data
 PARAMETERS
-   c(plnt) Objective function coefficients ($ per plant)
-         /Eggplant 6,
-         Tomatoes 7/
+   c(vhcl) Objective function coefficients ($ per vehicle)
+         /Coupes 6000,
+         Minivans 7000/
+         
    b(res) Right hand constraint values (per resource)
-          /Water 4000000,
-           Land  12000,
+          /Metal 4000000,
+           CircBds 12000,
            Labor  17500/;
 
-TABLE A(plnt,res) Left hand side constraint coefficients
-                 Water    Land   Labor
- Eggplant        1000      4       5
- Tomatoes        2000      3       2.5;
-
+TABLE A(vhcl,res) Left hand side constraint coefficients
+               Metal     CircBds   Labor 
+ Coupes        1000      4         5
+ Minivans      2000      3         2.5;
 
 * 3. DEFINE the variables
-VARIABLES X(plnt) plants planted (Number)
+VARIABLES X(vhcl) plants planted (Number)
           VPROFIT  total profit ($);
 
 * Non-negativity constraints
@@ -58,8 +58,8 @@ EQUATIONS
    PROFIT Total profit ($) and objective function value
    RES_CONSTRAIN(res) Resource Constraints;
 
-PROFIT..                 VPROFIT =E= SUM(plnt, c(plnt)*X(plnt));
-RES_CONSTRAIN(res) ..    SUM(plnt, A(plnt,res)*X(plnt)) =L= b(res);
+PROFIT..                 VPROFIT =E= SUM(vhcl, c(vhcl)*X(vhcl));
+RES_CONSTRAIN(res) ..    SUM(vhcl, A(vhcl,res)*X(vhcl)) =L= b(res);
 
 
 * 5. DEFINE the MODEL from the EQUATIONS
