@@ -1,4 +1,4 @@
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 1
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 1
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 C o m p i l a t i o n
 
@@ -9,7 +9,7 @@ C o m p i l a t i o n
        
       THE PROBLEM:
        
-      An irrigated farm can be planted in two crops:  eggplants and tomatoes.  Data are as fol-lows:
+      An irrigated farm can be planted in two crops:  eggplants and tomatoes.  Data are as follows:
        
       Seasonal Resource
       Inputs or Profit        Crops        Resource
@@ -30,7 +30,7 @@ C o m p i l a t i o n
       September 15, 2015
   28   
   29  * 1. DEFINE the SETS
-  30  SETS vhcl crops growing /Coupes, Minivans/
+  30  SETS vhcl varieties of car /Coupes, Minivans/
   31       res resources /Metal, CircBds, Labor/;
   32   
   33  * 2. DEFINE input data
@@ -50,7 +50,7 @@ C o m p i l a t i o n
   47   Minivans      2000      3         2.5;
   48   
   49  * 3. DEFINE the variables
-  50  VARIABLES X(vhcl) plants planted (Number)
+  50  VARIABLES X(vhcl) vehicles produced (Number)
   51            VPROFIT  total profit ($);
   52   
   53  * Non-negativity constraints
@@ -58,7 +58,7 @@ C o m p i l a t i o n
   55   
   56  * 4. COMBINE variables and data in equations
   57  EQUATIONS
-  58     PROFIT Total profit ($) and objective function value
+  58     PROFIT Total profit ($) from producing cars
   59     RES_CONSTRAIN(res) Resource Constraints;
   60   
   61  PROFIT..                 VPROFIT =E= SUM(vhcl, c(vhcl)*X(vhcl));
@@ -66,7 +66,7 @@ C o m p i l a t i o n
   63   
   64   
   65  * 5. DEFINE the MODEL from the EQUATIONS
-  66  MODEL PLANTING /PROFIT, RES_CONSTRAIN/;
+  66  MODEL PRODUCTION /PROFIT, RES_CONSTRAIN/;
   67  *Altnerative way to write (include all previously defined equations)
   68  *MODEL PLANTING /ALL/;
   69   
@@ -74,18 +74,18 @@ C o m p i l a t i o n
   71  * 6. SOLVE the MODEL
   72  * Solve the PLANTING model using a Linear Programming Solver (see File=>Options=>Solvers)
   73  *     to maximize VPROFIT
-  74  SOLVE PLANTING USING LP MAXIMIZING VPROFIT;
+  74  SOLVE PRODUCTION USING LP MAXIMIZING VPROFIT;
   75   
   76  * 6. CLick File menu => RUN (F9) or Solve icon and examine solution report in .LST file
 
 
 COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 2
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 2
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Equation Listing    SOLVE PLANTING Using LP From line 74
+Equation Listing    SOLVE PRODUCTION Using LP From line 74
 
 
----- PROFIT  =E=  Total profit ($) and objective function value
+---- PROFIT  =E=  Total profit ($) from producing cars
 
 PROFIT..  - 6000*X(Coupes) - 7000*X(Minivans) + VPROFIT =E= 0 ; (LHS = 0)
      
@@ -98,12 +98,12 @@ RES_CONSTRAIN(CircBds)..  4*X(Coupes) + 3*X(Minivans) =L= 12000 ; (LHS = 0)
      
 RES_CONSTRAIN(Labor)..  5*X(Coupes) + 2.5*X(Minivans) =L= 17500 ; (LHS = 0)
      
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 3
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 3
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Column Listing      SOLVE PLANTING Using LP From line 74
+Column Listing      SOLVE PRODUCTION Using LP From line 74
 
 
----- X  plants planted (Number)
+---- X  vehicles produced (Number)
 
 X(Coupes)
                 (.LO, .L, .UP, .M = 0, 0, +INF, 0)
@@ -126,9 +126,9 @@ VPROFIT
                 (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
         1       PROFIT
 
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 4
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 4
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Range Statistics    SOLVE PLANTING Using LP From line 74
+Range Statistics    SOLVE PRODUCTION Using LP From line 74
 
 
 RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
@@ -137,9 +137,9 @@ RHS       [min, max] : [ 1.200E+04, 4.000E+06] - Zero values observed as well
 Bound     [min, max] : [        NA,        NA] - Zero values observed as well
 Matrix    [min, max] : [ 1.000E+00, 7.000E+03]
 
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 5
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 5
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Model Statistics    SOLVE PLANTING Using LP From line 74
+Model Statistics    SOLVE PRODUCTION Using LP From line 74
 
 
 MODEL STATISTICS
@@ -149,15 +149,15 @@ BLOCKS OF VARIABLES           2     SINGLE VARIABLES            3
 NON ZERO ELEMENTS             9
 
 
-GENERATION TIME      =        0.016 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 15:57:16 Page 6
+GENERATION TIME      =        0.000 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/18/25 16:11:08 Page 6
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
-Solution Report     SOLVE PLANTING Using LP From line 74
+Solution Report     SOLVE PRODUCTION Using LP From line 74
 
 
                S O L V E      S U M M A R Y
 
-     MODEL   PLANTING            OBJECTIVE  VPROFIT
+     MODEL   PRODUCTION          OBJECTIVE  VPROFIT
      TYPE    LP                  DIRECTION  MAXIMIZE
      SOLVER  CPLEX               FROM LINE  74
 
@@ -165,7 +165,7 @@ Solution Report     SOLVE PLANTING Using LP From line 74
 **** MODEL STATUS      1 Optimal
 **** OBJECTIVE VALUE         20000000.0000
 
- RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ RESOURCE USAGE, LIMIT          0.016 10000000000.000
  ITERATION COUNT, LIMIT         3    2147483647
 *** This solver runs with a community license.
 --- GMO setup time: 0.00s
@@ -176,7 +176,7 @@ Solution Report     SOLVE PLANTING Using LP From line 74
 
 
 --- LP status (1): optimal.
---- Cplex Time: 0.00sec (det. 0.01 ticks)
+--- Cplex Time: 0.02sec (det. 0.01 ticks)
 
 
 Optimal solution found
@@ -187,7 +187,7 @@ Objective:     20000000.000000
 
 ---- EQU PROFIT              .              .              .             1.0000      
 
-  PROFIT  Total profit ($) and objective function value
+  PROFIT  Total profit ($) from producing cars
 
 ---- EQU RES_CONSTRAIN  Resource Constraints
 
@@ -197,7 +197,7 @@ Metal          -INF      4000000.0000   4000000.0000         2.0000
 CircBds        -INF        12000.0000     12000.0000      1000.0000      
 Labor          -INF        14000.0000     17500.0000          .          
 
----- VAR X  plants planted (Number)
+---- VAR X  vehicles produced (Number)
 
                 LOWER          LEVEL          UPPER         MARGINAL
 
@@ -216,7 +216,7 @@ Minivans          .           800.0000        +INF             .
                              0  UNBOUNDED
 
 
-EXECUTION TIME       =        0.110 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+EXECUTION TIME       =        0.094 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
 
 
 USER: Course License                                 G250902+0003Ac-GEN
