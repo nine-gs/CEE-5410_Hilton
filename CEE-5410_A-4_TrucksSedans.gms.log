@@ -1,0 +1,69 @@
+--- Job CEE-5410_A-4_TrucksSedans.gms Start 09/24/25 22:00:15 51.1.0 2d039df5 WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\51\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-4_TrucksSedans.gms"
+    PageSize 0
+    ScrDir "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\225a\"
+    SysDir C:\GAMS\51\
+    LogOption 3
+    AppendLog 1
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: Course License                                 G250902+0003Ac-GEN
+          Utah State University                                     DCE4709
+          225a\gamslice.dat
+          node:22668303 mem:16 cores:4 ipport:55253 uses:0@0 v:2           
+          Course license for use within the course and related course work
+          The expiration date of time-limited license is Dec 31, 2025
+System information: 4 physical cores and 16 Gb physical memory detected
+GAMS 51.1.0   Copyright (C) 1987-2025 GAMS Development. All rights reserved
+--- Starting compilation
+--- CEE-5410_A-4_TrucksSedans.gms(65) 3 Mb
+--- Starting execution: elapsed 0:00:00.025
+--- Generating LP model PRODUCTION
+--- CEE-5410_A-4_TrucksSedans.gms(65) 4 Mb
+---   5 rows  3 columns  10 non-zeroes
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 6.000E+03, 1.800E+04] - Zero values observed as well
+--- Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+--- Matrix    [min, max] : [ 1.000E+00, 1.100E+02]
+--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.036
+
+IBM ILOG CPLEX   51.1.0 2d039df5 Sep 13, 2025          WEI x86 64bit/MS Window
+
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+Version identifier: 22.1.2.0 | 2024-11-25 | 0edbb82fd
+CPXPARAM_Advance                                 0
+CPXPARAM_Simplex_Display                         2
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Pool_Capacity                       0
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Tried aggregator 1 time.
+LP Presolve eliminated 1 rows and 1 columns.
+Reduced LP has 3 rows, 2 columns, and 6 nonzeros.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Iteration      Dual Objective            In Variable           Out Variable
+     1  I            0.000000               X(sedan)PART_CONSTRAIN(se slack
+     2         1140000.000000               X(truck)PART_CONSTRAIN(fu slack
+     3         1080000.000000PART_CONSTRAIN(fu slackPART_CONSTRAIN(qu slack
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:      1080000.000000
+
+--- Reading solution for model PRODUCTION
+*** Status: Normal completion
+--- Job CEE-5410_A-4_TrucksSedans.gms Stop 09/24/25 22:00:15 elapsed 0:00:00.115

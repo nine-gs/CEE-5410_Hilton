@@ -1,0 +1,229 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 6410 - Water Resources Systems Analysis
+      Assignment 4 - GAMS solution for hay/grain and truck/sedan problems
+       
+      HAY AND GRAIN
+       
+      An aqueduct constructed to supply water to industrial users has an excess capacity in the months
+      of j, j, and a of 14,000 acft, 18,000 acft, and 6,000 acft, respectively. It is
+      proposed to develop not more than 10,000 acres of new land by utilizing the excess aqueduct
+      capacity for irrigation water deliveries. Two crops, hay and grain, are to be grown. Their
+      monthly water requirements and expected net returns are given in the following table:
+       
+                          Monthly water required (acft/acre)              Return per acre
+                          j            j            a          
+      Hay                 2               1               1               100
+      Grain               1               2               0               120
+      Water Supply (acft) 14000           18000           6000
+                      
+      Determine the combination of hay and grain that maximizes profit.
+       
+  22   
+  23  * STEP 1: SET DEFINITIONS *
+  24   
+  25  SETS crops acres of crop /hay, grain/
+  26       water acft per acre /june, july, august, land/;
+  27   
+  28   
+  29  * STEP 2: INPUT DATA *
+  30   
+  31  PARAMETERS
+  32     c(crops) Objective function coefficients ($ per acre of crop)
+  33           /hay 100,
+  34            grain 120/
+  35   
+  36     b(water) Right hand constraint values (availible water each month in acft)
+  37            /june 14000,
+  38             july 18000,
+  39             august 6000
+  40             land 10000/;
+  41   
+  42  TABLE A(crops, water) Left hand side constraint coefficients
+  43              june    july    august  land
+  44   hay        2       1       1       1
+  45   grain      1       2       0       1
+  46   
+  47   
+  48  * STEP 3: DEFINE VARIABLES
+  49   
+  50  VARIABLES X(crops) acres of crop planted (number)
+  51            VPROFIT  total profit (USD);
+  52   
+  53   
+  54  * STEP 4: CONSTRAINTS *
+  55   
+  56  * Non-negativity constraints
+  57  POSITIVE VARIABLES X;
+  58   
+  59  * SUpply-related constraints
+  60  EQUATIONS
+  61     PROFIT Total profit ($) from harvesting crops
+  62     WTR_CONSTRAIN(water) Water Constraints;
+  63   
+  64  PROFIT..                 VPROFIT =E= SUM(crops, c(crops)*X(crops));
+  65  WTR_CONSTRAIN(water) ..    SUM(crops, A(crops, water)*X(crops)) =L= b(water);
+  66   
+  67   
+  68  * 5. DEFINE AND SOLVE MODEL *
+  69   
+  70  MODEL PRODUCTION /ALL/;
+  71  SOLVE PRODUCTION USING LP MAXIMIZING VPROFIT;
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE PRODUCTION Using LP From line 71
+
+
+---- PROFIT  =E=  Total profit ($) from harvesting crops
+
+PROFIT..  - 100*X(hay) - 120*X(grain) + VPROFIT =E= 0 ; (LHS = 0)
+     
+
+---- WTR_CONSTRAIN  =L=  Water Constraints
+
+WTR_CONSTRAIN(june)..  2*X(hay) + X(grain) =L= 14000 ; (LHS = 0)
+     
+WTR_CONSTRAIN(july)..  X(hay) + 2*X(grain) =L= 18000 ; (LHS = 0)
+     
+WTR_CONSTRAIN(august)..  X(hay) =L= 6000 ; (LHS = 0)
+     
+REMAINING ENTRY SKIPPED
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE PRODUCTION Using LP From line 71
+
+
+---- X  acres of crop planted (number)
+
+X(hay)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -100       PROFIT
+        2       WTR_CONSTRAIN(june)
+        1       WTR_CONSTRAIN(july)
+        1       WTR_CONSTRAIN(august)
+        1       WTR_CONSTRAIN(land)
+
+X(grain)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -120       PROFIT
+        1       WTR_CONSTRAIN(june)
+        2       WTR_CONSTRAIN(july)
+        1       WTR_CONSTRAIN(land)
+
+
+---- VPROFIT  total profit (USD)
+
+VPROFIT
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       PROFIT
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE PRODUCTION Using LP From line 71
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 6.000E+03, 1.800E+04] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 1.200E+02]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE PRODUCTION Using LP From line 71
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            5
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            3
+NON ZERO ELEMENTS            10
+
+
+GENERATION TIME      =        0.015 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/24/25 21:58:03 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE PRODUCTION Using LP From line 71
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PRODUCTION          OBJECTIVE  VPROFIT
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  71
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE          1160000.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:      1160000.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU PROFIT              .              .              .             1.0000      
+
+  PROFIT  Total profit ($) from harvesting crops
+
+---- EQU WTR_CONSTRAIN  Water Constraints
+
+              LOWER          LEVEL          UPPER         MARGINAL
+
+june          -INF        12000.0000     14000.0000          .          
+july          -INF        18000.0000     18000.0000        20.0000      
+august        -INF         2000.0000      6000.0000          .          
+land          -INF        10000.0000     10000.0000        80.0000      
+
+---- VAR X  acres of crop planted (number)
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+hay            .          2000.0000        +INF             .          
+grain          .          8000.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR VPROFIT           -INF      1160000.0000        +INF             .          
+
+  VPROFIT  total profit (USD)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.109 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-4_HayGrain.gms
+Output     C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-4_HayGrain.lst
