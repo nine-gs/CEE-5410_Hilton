@@ -1,0 +1,157 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/25/25 16:17:25 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   1  * CEE 5410: Water Resources System Analysis *
+   2  * ASSIGNMENT 5: Hydropower and Irrigation Optimization via GAMS *
+   3  * 9/23/2025 *
+   4   
+   5  * INPUT DATA *
+   6  * Monthly - inflow volume             - VIx
+   7  * Monthly - hydropower unit price     - rHx
+   8  * Monthly - irrigation unit price     - rFx
+   9   
+  10  * MONTH (x)     INFLOW (VIx)   HYDROPOWER PRICE (rHx)   IRRIGATION PRICE (rFx)
+  11  * 1
+  12  * 2
+  13  * 3
+  14  * 4
+  15  * 5
+  16  * 6
+  17   
+  18  * DECISION VARIABLES *
+  19  * Volume to irrigation     - VFx
+  20  * Volume through turbine   - VHx
+  21  * Volume through spillway  - VSx
+  22  * Volume through A         - VAx
+  23  * Volume in reservoir      - VRx
+  24   
+  25  * OBJECTIVE FUNCTION *
+  26  * Maximize revenue from irrigation and hydropower.
+  27  * Max R() = SUM(rFx * vFx + rPx * vPx) for all x
+  28   
+  29  * CONSTRAINT EQUATIONS *
+  30  * Reservoir Mass Balance:       VRx-1 + VIx - VPx - VSx = VRx
+  31  * Hydropower Ceiling:           VPm <= 4 for all x
+  32  * Flow at Point A:              VAx >= 1 for all x
+  33  * Reservoir Capacity:           VSx <= 9 for all x
+  34  * Diversion Mass Balance:       VIx + VAx = VSx + VHx
+  35  * Final Month's Storage:        VR6 >= VR0
+  36  * Starting Reservoir Volume:    VR0 = 5
+  37  * Non-negativity:
+  38   
+  39  * In total, there are 30 decision variables and 62 unique constraint equations for this problem!
+  40   
+  41   
+  42  * STEP ONE: Define Sets *
+  43  SETS    location /inflow, storage, turbine, spillway, irrig, pointA, pointC/
+  44          month /mth1*mth6/;
+  45   
+  46  * STEP TWO: Define input data *
+  47  SCALAR  TURBINEMAX Maximum flow through turbine per month /4/
+  48          AFLOWMIN Minimum flow through point A per month /1/
+  49          RESMAX Maximum storage capacity of reservoir /9/;
+  50   
+  51  PARAMETERS  powerPrice(month)
+  52                 /mth1 1.6
+  53                  mth2 1.7
+  54                  mth3 1.8
+  55                  mth4 1.9
+  56                  mth5 2
+  57                  mth6 2/
+  58   
+  59              irrigPrice(month)
+  60                 /mth1 1.0
+  61                  mth2 1.2
+  62                  mth3 1.9
+  63                  mth4 2
+  64                  mth5 2.2
+  65                  mth6 2.2/
+  66   
+  67              inflow(month) Right hand constraints (avilible units of water each month)
+  68                 /mth1 2,
+  69                  mth2 2,
+  70                  mth3 3,
+  71                  mth4 4,
+  72                  mth5 3,
+  73                  mth6 2/
+  74   
+  75              storage(month)
+  76                 /;
+****                  $338
+**** 338  Unique element expected - symbol was not an element
+****         and the following text will be skipped until a proper
+****         symbol is found to recover. Remember that an UNQUOTED
+****         element has to start with a letter or digit
+****         followed by letters, digits, '+', '-' or '_'. The length
+****         is limited to 63 characters. The following words are
+****         reserved (starting symbols of a GAMS statement) and cannot
+****         be used for UNQUOTED set elements:
+****     
+****            ABORT, ACRONYM(S), ALIAS, BINARY, DISPLAY, ELSE
+****            EQUATION(S), EXECUTE, FILE(S), FOR, FREE, IF, INTEGER, LOOP
+****            MODEL(S), NEGATIVE, OPTION(S), PARAMETER(S)
+****            POSITIVE, PROCEDURE(S), PUT, PUTCLEAR, PUTCLOSE, PUTHD
+****            PUTPAGE, PUTTL, SCALAR(S), SEMICONT, SET(S), SOS1, SOS2
+****            TABLE, VARIABLE(S), WHILE
+****     
+****         QUOTED elements can contain any character. Single and
+****         double quotes can be used (starting and ending quote have
+****         to match).
+  77   
+  78   
+  79  * STEP TWO: Define variables *
+  80   
+  81  VARIABLES   X(location, month) ALl volume per month
+****          $1 $182
+****   1  Real number expected
+**** 182  Closing '/' missing in a set, parameter or model statement
+  82              PROFIT Objective function value ($)
+  83   
+  84  POSITIVE VARIABLES X;
+  85   
+  86   
+  87   
+  88  * STEP 4: Use variables and data to set constraints
+  89   
+  90  EQUATIONS
+  91      PROFIT     Total profit ($) aka the objective function value.
+****           $195
+**** 195  Symbol redefined with a different type
+  92      RESBALANCE  Volume of reservoir during months 1 to 5.
+  93      RESFINAL    Minimum volume in storage at end of month 6;
+  94   
+  95      PROFIT..                VPROFIT =E= SUM(month, powerPrice(month)*X("turbine", months) + irrigPrice(month)*X("irrig", months))
+****           $143,81                  $140$409
+****  81  A '=' expected for assignment statements. Alternative
+****         assignment operators are '$=' and ':='.
+**** 140  Unknown symbol
+**** 143  A suffix is missing
+**** 409  Unrecognizable item - skip to find a new statement
+****        looking for a ';' or a key word to get started again
+  96      TURBINEMAX(month)..     X("turbine", month) =L= TURBINEMAX
+  97      AMINFLOW(month)..       X("pointA", month)  =G= AFLOWMIN
+  98      RESBALANCE(month)..     X("storage",month) + inflow(month) - X("turbine", month) =E= X("storage", month+1)
+  99      RESFINAL(mth6)..        X("storage", "mth6") + inflow("mth6") - X
+ 100   
+ 101   
+ 102   
+
+**** 8 ERROR(S)   0 WARNING(S)
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-5_GAMS.gms
+Output     C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-5_GAMS.lst
+
+**** USER ERROR(S) ENCOUNTERED
