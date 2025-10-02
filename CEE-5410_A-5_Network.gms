@@ -1,24 +1,7 @@
 $onText
-
-Dimensions:
-    1. Manufacturers
-    2. Suppliers
-    3. Recipient Firms
-    
-Decision Variables:
-    1. Deliveries from Manufactures --> Suppliers (shelving units) (4 paths)
-    2. Deliveries from Suppliers --> Recipient Firms (shelving units) (6 paths)
-    
-Objective Function
-    Minimize the cost of shipping shelving units from manufacturers to recipient firms.
-    Incorporates unit shipping costs.
-    
-Constraints:
-    Recipient firm demand: Zrox = 50, Hewes = 60, Reck-Wright = 40.
-    Suppliers must deliver as as much or less than they recieve.
-    All shipment quantities need to be >= 0.
-
-
+CEE 5410 Water Resource System Analysis
+Assignment 5: Network Shipping Problem
+9/30/2025
 
 DIMENSIONS:
 Manufacturers: Arnold, Super Shelf
@@ -26,20 +9,24 @@ Suppliers: Thomas, Wash-Burn
 Recipient Firms: Zrox, Hewes, Rock-Wright
 
 DECISION VARIABLES:
-xAT: shelving units shipped from Arnold to Thomas
-xAW: shelving units shipped from Arnold to Wash-Burn
-xST: shelving units shipped from Super Shelf to Thomas
-xSW: shelving units shipped from Super Shelf to Wash-Burn
-xTZ: shelving units shipped from Thomas to Zrox
-xTH: shelving units shipped from Thomas to Hewes
-xTR: shelving units shipped from Thomas to Rock-Wright
-xWZ: shelving units shipped from Wash-Burn to Zrox
-xWH: shelving units shipped from Wash-Burn to Hewes
-wWR: shelving units shipped from Wash-Burn to Rock-Wright
+    1. Deliveries from Manufactures --> Suppliers (shelving units) (4 paths)
+        xAT: shelving units shipped from Arnold to Thomas
+        xAW: shelving units shipped from Arnold to Wash-Burn
+        xST: shelving units shipped from Super Shelf to Thomas
+        xSW: shelving units shipped from Super Shelf to Wash-Burn
+        
+    2. Deliveries from Suppliers --> Recipient Firms (shelving units) (6 paths)
+        xTZ: shelving units shipped from Thomas to Zrox
+        xTH: shelving units shipped from Thomas to Hewes
+        xTR: shelving units shipped from Thomas to Rock-Wright
+        xWZ: shelving units shipped from Wash-Burn to Zrox
+        xWH: shelving units shipped from Wash-Burn to Hewes
+        xWR: shelving units shipped from Wash-Burn to Rock-Wright
 
 OBJECTIVE EQUATION:
-Min C = 5*xAT + 8*xAW + 7*xST + 4*xSW + 1*xTZ + 5*xTH + 8*xTR + 3*xWZ + 4*xWH + 4*xWR
-Min C = SUM(cost*x[origin][dest])  **this could be split into separate summations for the two distinct stages of transport.
+    Minimize the cost of shipping shelving units from manufacturers to recipient firms.
+    Specific Form : Min C = 5*xAT + 8*xAW + 7*xST + 4*xSW + 1*xTZ + 5*xTH + 8*xTR + 3*xWZ + 4*xWH + 4*xWR
+    General Form:   Min C = SUM(cost*x[origin][dest])  **this could be split into separate summations for the two distinct stages of transport.
 
 
 CONSTRAINT EQUATIONS:
@@ -60,9 +47,59 @@ Specific form.......................General Form................................
 $offText
 
 
+SETS routes /xAT, xAW, xST, xSW, xTZ, xWZ, xTH, xWH, xTR, xWR/
+     nodes /mA, mS, bT, bW, dZ, dH, dR/
+     
+PARAMETERS
+    c(routes)
+       /xAT 5,
+        xAW 8,
+        xST 7,
+        xSW 4,
+        xTZ 1,
+        xWZ 5,
+        xTH 8,
+        xWH 3,
+        xTR 4,
+        xWR 4 /
+        
+    supply(nodes)
+       /mA 75,
+        mS 75/
+        
+    demand(nodes)
+       /dZ 50,
+        dH 60,
+        dR 40/;
+
+TABLE A(routes,nodes)
+        mA  mS  bT  bW  dZ  dH  dR
+xAT     1   0   -1  0   0   0   0
+xAW     1   0   0   -1  0   0   0
+xST     0   1   -1  0   0   0   0
+xSW     0   1   0   -1  0   0   0
+xTZ     0   0   1   0   -1  0   0
+xTH     0   0   1   0   0   -1  0
+xTR     0   0   1   0   0   0   -1
+xWZ     0   0   0   1   -1  0   0
+xWH     0   0   0   1   0   -1  0
+xWR     0   0   0   1   0   0   -1;
 
 
+   
+VARIABLES X(routes) number of packages moved on route
+          VCOST     total cost (USD);
+          
+POSITIVE VARIABLES X;
 
+EQUATIONS
+    COST
+    FLOW_BAL(nodes);
     
-    
-    
+    COST..      VCOST =E= SUM(routes, c(routes)*X(routes));
+    FLOW_BAL(nodes)..     SUM(routes, A(routes,nodes)*X(routes)) =E= (supply(nodes)$supply(nodes)) - (demand(nodes)$demand(nodes));
+
+
+MODEL OPTIMALNETWORK /ALL/;
+SOLVE OPTIMALNETWORK USING LP MINIMIZING VCOST;
+

@@ -1,0 +1,276 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 5410 Water Resource System Analysis
+      Assignment 5: Network Shipping Problem
+      9/30/2025
+       
+      DIMENSIONS:
+      Manufacturers: Arnold, Super Shelf
+      Suppliers: Thomas, Wash-Burn
+      Recipient Firms: Zrox, Hewes, Rock-Wright
+       
+      DECISION VARIABLES:
+          1. Deliveries from Manufactures --> Suppliers (shelving units) (4 paths)
+              xAT: shelving units shipped from Arnold to Thomas
+              xAW: shelving units shipped from Arnold to Wash-Burn
+              xST: shelving units shipped from Super Shelf to Thomas
+              xSW: shelving units shipped from Super Shelf to Wash-Burn
+              
+          2. Deliveries from Suppliers --> Recipient Firms (shelving units) (6 paths)
+              xTZ: shelving units shipped from Thomas to Zrox
+              xTH: shelving units shipped from Thomas to Hewes
+              xTR: shelving units shipped from Thomas to Rock-Wright
+              xWZ: shelving units shipped from Wash-Burn to Zrox
+              xWH: shelving units shipped from Wash-Burn to Hewes
+              xWR: shelving units shipped from Wash-Burn to Rock-Wright
+       
+      OBJECTIVE EQUATION:
+          Minimize the cost of shipping shelving units from manufacturers to recipient firms.
+          Specific Form : Min C = 5*xAT + 8*xAW + 7*xST + 4*xSW + 1*xTZ + 5*xTH + 8*xTR + 3*xWZ + 4*xWH + 4*xWR
+          General Form:   Min C = SUM(cost*x[origin][dest])  **this could be split into separate summations for the two distinct stages of transport.
+       
+       
+      CONSTRAINT EQUATIONS:
+      Specific form.......................General Form................................................Plain Language.................................................
+       
+      1: xAT + xAW <= 75                  SUM(x[manufacturer][supplier]) <=  supply@manufacturer      Manufacturer form supply: Arnold = 75, Super-Shelf = 75
+      2: xST + xSW <= 75
+       
+      3: xTZ + xWZ >= 50                  SUM(x[supplier][recipient]) >= demand@recipient             Recipient firm demand: Zrox = 50, Hewes = 60, Reck-Wright = 40.
+      4: xTH + xWH >= 60
+      5: xTR + xWR >= 40
+       
+      6: xAT + xST >= xTZ + xTH + xTR     SUM(x[supplier][recipient]) >= SUM(x[supplier][recipient])  Suppliers must deliver as as much or less than they recieve.
+      7: xAW + xSW >= xWZ + xWH + xWR
+       
+      8-17: [all x] >= 0                  x[origin][destination] >= 0                                 All shipment quantities need to be >= 0. No back shipments.
+       
+  48   
+  49   
+  50  SETS routes /xAT, xAW, xST, xSW, xTZ, xWZ, xTH, xWH, xTR, xWR/
+  51       nodes /mA, mS, bT, bW, dZ, dH, dR/
+  52   
+  53  PARAMETERS
+  54      c(routes)
+  55         /xAT 5,
+  56          xAW 8,
+  57          xST 7,
+  58          xSW 4,
+  59          xTZ 1,
+  60          xWZ 5,
+  61          xTH 8,
+  62          xWH 3,
+  63          xTR 4,
+  64          xWR 4 /
+  65   
+  66      supply(nodes)
+  67         /mA 75,
+  68          mS 75/
+  69   
+  70      demand(nodes)
+  71         /dZ 50,
+  72          dH 60,
+  73          dR 40/;
+  74   
+  75  TABLE A(routes,nodes)
+  76          mA  mS  bT  bW  dZ  dH  dR
+  77  xAT     1   0   -1  0   0   0   0
+  78  xAW     1   0   0   -1  0   0   0
+  79  xST     0   1   -1  0   0   0   0
+  80  xSW     0   1   0   -1  0   0   0
+  81  xTZ     0   0   1   0   -1  0   0
+  82  xTH     0   0   1   0   0   -1  0
+  83  xTR     0   0   1   0   0   0   -1
+  84  xWZ     0   0   0   1   -1  0   0
+  85  xWH     0   0   0   1   0   -1  0
+  86  xWR     0   0   0   1   0   0   -1;
+  87   
+  88   
+  89   
+  90  VARIABLES X(routes) number of packages moved on route
+  91            VCOST     total cost (USD);
+  92   
+  93  POSITIVE VARIABLES X;
+  94   
+  95  EQUATIONS
+  96      COST
+  97      FLOW_BAL(nodes);
+  98   
+  99      COST..      VCOST =E= SUM(routes, c(routes)*X(routes));
+ 100      FLOW_BAL(nodes)..     SUM(routes, A(routes,nodes)*X(routes)) =E= (supply(nodes)$supply(nodes)) - (demand(nodes)$demand(nodes));
+ 101   
+ 102   
+ 103  MODEL OPTIMALNETWORK /ALL/;
+ 104  SOLVE OPTIMALNETWORK USING LP MINIMIZING VCOST;
+ 105   
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE OPTIMALNETWORK Using LP From line 104
+
+
+---- COST  =E=  
+
+COST..  - 5*X(xAT) - 8*X(xAW) - 7*X(xST) - 4*X(xSW) - X(xTZ) - 5*X(xWZ) - 8*X(xTH) - 3*X(xWH) - 4*X(xTR) - 4*X(xWR) + VCOST =E= 0 ; (LHS = 0)
+     
+
+---- FLOW_BAL  =E=  
+
+FLOW_BAL(mA)..  X(xAT) + X(xAW) =E= 75 ; (LHS = 0, INFES = 75 ****)
+     
+FLOW_BAL(mS)..  X(xST) + X(xSW) =E= 75 ; (LHS = 0, INFES = 75 ****)
+     
+FLOW_BAL(bT)..  - X(xAT) - X(xST) + X(xTZ) + X(xTH) + X(xTR) =E= 0 ; (LHS = 0)
+     
+REMAINING 4 ENTRIES SKIPPED
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE OPTIMALNETWORK Using LP From line 104
+
+
+---- X  number of packages moved on route
+
+X(xAT)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -5       COST
+        1       FLOW_BAL(mA)
+       -1       FLOW_BAL(bT)
+
+X(xAW)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -8       COST
+        1       FLOW_BAL(mA)
+       -1       FLOW_BAL(bW)
+
+X(xST)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+       -7       COST
+        1       FLOW_BAL(mS)
+       -1       FLOW_BAL(bT)
+
+REMAINING 7 ENTRIES SKIPPED
+
+---- VCOST  total cost (USD)
+
+VCOST
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       COST
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE OPTIMALNETWORK Using LP From line 104
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 4.000E+01, 7.500E+01] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 8.000E+00]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE OPTIMALNETWORK Using LP From line 104
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            8
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES           11
+NON ZERO ELEMENTS            31
+
+
+GENERATION TIME      =        0.016 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/01/25 23:58:14 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE OPTIMALNETWORK Using LP From line 104
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   OPTIMALNETWORK      OBJECTIVE  VCOST
+     TYPE    LP                  DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  104
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE             1065.0000
+
+ RESOURCE USAGE, LIMIT          0.016 10000000000.000
+ ITERATION COUNT, LIMIT         0    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.02sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:         1065.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU COST                .              .              .             1.0000      
+
+---- EQU FLOW_BAL  
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+mA        75.0000        75.0000        75.0000         5.0000      
+mS        75.0000        75.0000        75.0000         4.0000      
+bT          .              .              .             EPS         
+bW          .              .              .              .          
+dZ       -50.0000       -50.0000       -50.0000        -1.0000      
+dH       -60.0000       -60.0000       -60.0000        -3.0000      
+dR       -40.0000       -40.0000       -40.0000        -4.0000      
+
+---- VAR X  number of packages moved on route
+
+           LOWER          LEVEL          UPPER         MARGINAL
+
+xAT          .            75.0000        +INF             .          
+xAW          .              .            +INF            3.0000      
+xST          .              .            +INF            3.0000      
+xSW          .            75.0000        +INF             .          
+xTZ          .            50.0000        +INF             .          
+xWZ          .              .            +INF            4.0000      
+xTH          .              .            +INF            5.0000      
+xWH          .            60.0000        +INF             .          
+xTR          .            25.0000        +INF             .          
+xWR          .            15.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR VCOST             -INF         1065.0000        +INF             .          
+
+  VCOST  total cost (USD)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+
+
+EXECUTION TIME       =        0.109 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-5_Network.gms
+Output     C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_A-5_Network.lst

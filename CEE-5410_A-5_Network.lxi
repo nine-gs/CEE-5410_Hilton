@@ -1,0 +1,14 @@
+B 3 C o m p i l a t i o n
+B 114 Equation Listing    SOLVE OPTIMALNETWORK Using LP From line 104
+D 117 COST
+D 122 FLOW_BAL
+B 134 Column Listing      SOLVE OPTIMALNETWORK Using LP From line 104
+E 137 X
+E 159 VCOST
+B 167 Range Statistics    SOLVE OPTIMALNETWORK Using LP From line 104
+B 178 Model Statistics    SOLVE OPTIMALNETWORK Using LP From line 104
+B 191 Solution Report     SOLVE OPTIMALNETWORK Using LP From line 104
+F 224 COST
+F 226 FLOW_BAL
+G 238 X
+G 255 VCOST
