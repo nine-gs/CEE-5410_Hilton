@@ -1,4 +1,4 @@
-GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 09/25/25 16:17:25 Page 1
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/14/25 16:02:02 Page 1
 G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
 C o m p i l a t i o n
 
@@ -116,7 +116,7 @@ C o m p i l a t i o n
   88  * STEP 4: Use variables and data to set constraints
   89   
   90  EQUATIONS
-  91      PROFIT     Total profit ($) aka the objective function value.
+  91      PROFIT      Total profit ($) aka the objective function value.
 ****           $195
 **** 195  Symbol redefined with a different type
   92      RESBALANCE  Volume of reservoir during months 1 to 5.
@@ -132,8 +132,8 @@ C o m p i l a t i o n
 ****        looking for a ';' or a key word to get started again
   96      TURBINEMAX(month)..     X("turbine", month) =L= TURBINEMAX
   97      AMINFLOW(month)..       X("pointA", month)  =G= AFLOWMIN
-  98      RESBALANCE(month)..     X("storage",month) + inflow(month) - X("turbine", month) =E= X("storage", month+1)
-  99      RESFINAL(mth6)..        X("storage", "mth6") + inflow("mth6") - X
+  98      RESBALANCE(month)$(ord(month) lt 6)..     X("storage", month) + inflow(month) - X("turbine", month) =E= X("storage", month+1)
+  99      RESBALANCE("mth6")..        X("storage", "mth6") + inflow("mth6") - X("turbine", "mth6") - X("spillway", "mth6") =E=
  100   
  101   
  102   
@@ -141,7 +141,7 @@ C o m p i l a t i o n
 **** 8 ERROR(S)   0 WARNING(S)
 
 
-COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+COMPILATION TIME     =        0.016 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
 
 
 USER: Course License                                 G250902+0003Ac-GEN

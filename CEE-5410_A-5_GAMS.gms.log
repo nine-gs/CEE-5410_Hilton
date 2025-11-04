@@ -1,5 +1,4 @@
-
---- Job CEE-5410_A-5_GAMS.gms Start 09/25/25 16:17:25 51.1.0 2d039df5 WEX-WEI x86 64bit/MS Windows
+--- Job CEE-5410_A-5_GAMS.gms Start 10/14/25 16:02:02 51.1.0 2d039df5 WEX-WEI x86 64bit/MS Windows
 --- Applying:
     C:\GAMS\51\gmsprmNT.txt
 --- GAMS Parameters defined
@@ -16,7 +15,7 @@
 Licensee: Course License                                 G250902+0003Ac-GEN
           Utah State University                                     DCE4709
           225a\gamslice.dat
-          node:22668303 mem:16 cores:4 ipport:59377 uses:0@0 v:2           
+          node:22668303 mem:16 cores:4 ipport:58331 uses:0@0 v:2           
           Course license for use within the course and related course work
           The expiration date of time-limited license is Dec 31, 2025
 System information: 4 physical cores and 16 Gb physical memory detected
@@ -64,4 +63,4 @@ GAMS 51.1.0   Copyright (C) 1987-2025 GAMS Development. All rights reserved
       looking for a ';' or a key word to get started again
 --- CEE-5410_A-5_GAMS.gms(102) 3 Mb 8 Errors
 *** Status: Compilation error(s)
---- Job CEE-5410_A-5_GAMS.gms Stop 09/25/25 16:17:25 elapsed 0:00:00.022
+--- Job CEE-5410_A-5_GAMS.gms Stop 10/14/25 16:02:03 elapsed 0:00:00.045

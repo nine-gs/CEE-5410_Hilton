@@ -48,7 +48,7 @@ $offText
 
 
 SETS routes /xAT, xAW, xST, xSW, xTZ, xWZ, xTH, xWH, xTR, xWR/
-     nodes  /mA, mS, bT, bW, dZ, dH, dR/;
+     nodes /mA, mS, bT, bW, dZ, dH, dR/
      
 PARAMETERS
     c(routes)
@@ -61,7 +61,7 @@ PARAMETERS
         xTH 5,
         xWH 4,
         xTR 8,
-        xWR 4/
+        xWR 4 /
         
     mfg(nodes)
        /mA 75,

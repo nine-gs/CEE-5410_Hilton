@@ -1,0 +1,122 @@
+--- Job CEE-5410_DualizedTomatoEggplant.gms Start 10/03/25 15:04:33 51.1.0 2d039df5 WEX-WEI x86 64bit/MS Windows
+--- Applying:
+    C:\GAMS\51\gmsprmNT.txt
+--- GAMS Parameters defined
+    Input "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_DualizedTomatoEggplant.gms"
+    PageSize 0
+    ScrDir "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\225a\"
+    SysDir C:\GAMS\51\
+    LogOption 3
+    AppendLog 1
+    ErrMsg 1
+    ErrorLog 99
+    IDE 1
+    LstTitleLeftAligned 1
+Licensee: Course License                                 G250902+0003Ac-GEN
+          Utah State University                                     DCE4709
+          225a\gamslice.dat
+          node:22668303 mem:16 cores:4 ipport:64321 uses:0@0 v:2           
+          Course license for use within the course and related course work
+          The expiration date of time-limited license is Dec 31, 2025
+System information: 4 physical cores and 16 Gb physical memory detected
+GAMS 51.1.0   Copyright (C) 1987-2025 GAMS Development. All rights reserved
+--- Starting compilation
+--- CEE-5410_DualizedTomatoEggplant.gms(99) 3 Mb
+--- Starting execution: elapsed 0:00:00.033
+--- CEE-5410_DualizedTomatoEggplant.gms(77) 4 Mb
+--- Generating LP model PLANT_PRIMAL
+--- CEE-5410_DualizedTomatoEggplant.gms(85) 4 Mb
+---   4 rows  3 columns  9 non-zeroes
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 1.200E+04, 4.000E+06] - Zero values observed as well
+--- Bound     [min, max] : [ 5.000E+00, 5.000E+00]
+--- Matrix    [min, max] : [ 1.000E+00, 2.000E+03]
+--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.124
+
+IBM ILOG CPLEX   51.1.0 2d039df5 Sep 13, 2025          WEI x86 64bit/MS Window
+
+*** This solver runs with a community license.
+
+*** Error Cannot open parameter file "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\cplex.opt"
+*** Error Error code = 2; No such file or directory
+
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+Version identifier: 22.1.2.0 | 2024-11-25 | 0edbb82fd
+CPXPARAM_Advance                                 0
+CPXPARAM_Simplex_Display                         2
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Pool_Capacity                       0
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 1 columns.
+Reduced LP has 3 rows, 2 columns, and 6 nonzeros.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Iteration      Dual Objective            In Variable           Out Variable
+     1 sI            0.000000            X(Tomatoes)RES_CONS_PRIMAL(L slack
+     2           22333.333333            X(Eggplant)RES_CONS_PRIMAL(W slack
+     3           20000.000000RES_CONS_PRIMAL(L slackRES_CONS_PRIMAL(L slack
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:        20000.000000
+
+--- Reading solution for model PLANT_PRIMAL
+--- Executing after solve: elapsed 0:00:00.362
+--- Generating LP model PLANT_DUAL
+--- CEE-5410_DualizedTomatoEggplant.gms(89) 4 Mb
+---   3 rows  4 columns  10 non-zeroes
+--- Range statistics (absolute non-zero finite values)
+--- RHS       [min, max] : [ 6.000E+00, 7.000E+00] - Zero values observed as well
+--- Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+--- Matrix    [min, max] : [ 1.000E+00, 4.000E+06]
+--- Executing CPLEX (Solvelink=2): elapsed 0:00:00.364
+
+IBM ILOG CPLEX   51.1.0 2d039df5 Sep 13, 2025          WEI x86 64bit/MS Window
+
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+Version identifier: 22.1.2.0 | 2024-11-25 | 0edbb82fd
+CPXPARAM_Advance                                 0
+CPXPARAM_Simplex_Display                         2
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Pool_Capacity                       0
+CPXPARAM_MIP_Tolerances_AbsMIPGap                0
+Tried aggregator 1 time.
+LP Presolve eliminated 0 rows and 1 columns.
+Reduced LP has 2 rows, 3 columns, and 6 nonzeros.
+Presolve time = 0.00 sec. (0.00 ticks)
+
+Iteration      Dual Objective            In Variable           Out Variable
+     1           18000.000000                Y(Land)RES_CONS_DUAL(Egg slack
+     2           20000.000000               Y(Water)RES_CONS_DUAL(Tom slack
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:        20000.000000
+
+--- Reading solution for model PLANT_DUAL
+--- Executing after solve: elapsed 0:00:00.446
+--- CEE-5410_DualizedTomatoEggplant.gms(95) 4 Mb
+--- GDX File (execute_unload) C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\Ex2-1Dual.gdx
+--- CEE-5410_DualizedTomatoEggplant.gms(97) 4 Mb
+GDX2XLS          51.1.0 2d039df5 Sep 13, 2025          WEI x86 64bit/MS Window
+Output file: C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\Ex2-1Dual.xlsx
+*** Status: Normal completion
+--- Job CEE-5410_DualizedTomatoEggplant.gms Stop 10/03/25 15:04:46 elapsed 0:00:13.422

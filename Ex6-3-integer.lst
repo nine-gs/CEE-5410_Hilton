@@ -1,0 +1,337 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 6410 Fall 2015
+      Example 6 in the Lecture notes for 9/29
+       
+      Minimize cost to supply water by a new treatment plant or wholesale contract
+      This is the relaxed version that treats the interger decision variables
+      as standard, positive, continuous variables.
+      With the additional $35,000 capital cost for establishing the wholesale contract.
+       
+      Integer version using INTEGER VARIABLES statement and SOLVE as MIP.
+       
+      David E Rosenberg
+      david.rosenberg@usu.edu
+      September 28, 2015
+  16   
+  17  * 1. DEFINE the SETS
+  18  SETS src water supply sources /tp "treatment plant", wc "wholesale contract"/;
+  19   
+  20  * 2. DEFINE input data
+  21  PARAMETERS
+  22     CapCost(src) capital cost ($ to build)
+  23           /tp 90000,
+  24            wc 35000/
+  25     OpCost(src) operating cost ($ per ac-ft)
+  26           /tp 120
+  27            wc 150/
+  28     MaxCapacity(src) Maximum capacity of source when built (ac-ft per year)
+  29            /tp 2000,
+  30             wc  12000/
+  31     MinUse(src) Minimum required use of source when built (ac-ft per year)
+  32            /tp 0,
+  33             wc  1000/
+  34     TotDemand  Total Demand (ac-ft per year) /2000/
+  35  * "Integer" variables free within 0 to 1 bounds. Same as "Binary Variables" statement below
+  36  * Leave values as is
+  37     IntUpBnd(src) Upper bound on integer variables (#)
+  38            /tp 1,
+  39             wc 1/
+  40     IntLowBnd(src) Lower bound on integer variables (#)
+  41             /tp 0,
+  42             wc 0/
+  43   
+  44  * 3. DEFINE the variables
+  45  VARIABLES I(src) binary decision to build or do prject from source src (1=yes 0=no)
+  46            X(src) volume of water provided by source src (ac-ft per year)
+  47            TCOST  total capital and operating costs of supply actions ($);
+  48   
+  49  BINARY VARIABLES I;
+  50  * Non-negativity constraints
+  51  POSITIVE VARIABLES X;
+  52   
+  53  * 4. COMBINE variables and data in equations
+  54  EQUATIONS
+  55     COST            Total Cost ($) and objective function value
+  56     MaxCap(src)     Maximum capacity of source when built (ac-ft per year)
+  57     MinReqUse(src)  Minimum required use of source when built (ac-ft per year)
+  58     MeetDemand      Meet demand (ac-ft per year)
+  59     IntUpBound(src) Upper bound on interger variables (number)
+  60     IntLowBound(src) Lower bound on integer variables (number);
+  61   
+  62  COST..                 TCOST =E= SUM(src,CapCost(src)*I(src) + OpCost(src)*X(src));
+  63  MaxCap(src) ..           X(src) =L= MaxCapacity(src)*I(src);
+  64  MinReqUse(src) ..        X(src) =G= MinUse(src)*I(src);
+  65  MeetDemand ..            sum(src,X(src)) =G= TotDemand;
+  66  IntUpBound(src) ..       I(src) =L= IntUpBnd(src);
+  67  IntLowBound(src) ..      I(src) =G= IntLowBnd(src);
+  68   
+  69  * 5. DEFINE the MODEL from the EQUATIONS
+  70  MODEL WatSupplyRelaxed /ALL/;
+  71   
+  72  * 6. Solve the Model as an LP (relaxed IP)
+  73  SOLVE WatSupplyRelaxed USING MIP MINIMIZING TCOST;
+  74   
+  75  DISPLAY X.L, I.L, TCOST.L;
+  76   
+  77  * Dump all input data and results to a GAMS gdx file
+  78  Execute_Unload "Ex6-3-integer.gdx";
+  79  * Dump the gdx file to an Excel workbook
+  80  Execute "gdx2xls Ex6-3-integer.gdx"
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE WatSupplyRelaxed Using MIP From line 73
+
+
+---- COST  =E=  Total Cost ($) and objective function value
+
+COST..  - 90000*I(tp) - 35000*I(wc) - 120*X(tp) - 150*X(wc) + TCOST =E= 0 ; (LHS = 0)
+     
+
+---- MaxCap  =L=  Maximum capacity of source when built (ac-ft per year)
+
+MaxCap(tp)..  - 2000*I(tp) + X(tp) =L= 0 ; (LHS = 0)
+     
+MaxCap(wc)..  - 12000*I(wc) + X(wc) =L= 0 ; (LHS = 0)
+     
+
+---- MinReqUse  =G=  Minimum required use of source when built (ac-ft per year)
+
+MinReqUse(tp)..  X(tp) =G= 0 ; (LHS = 0)
+     
+MinReqUse(wc)..  - 1000*I(wc) + X(wc) =G= 0 ; (LHS = 0)
+     
+
+---- MeetDemand  =G=  Meet demand (ac-ft per year)
+
+MeetDemand..  X(tp) + X(wc) =G= 2000 ; (LHS = 0, INFES = 2000 ****)
+     
+
+---- IntUpBound  =L=  Upper bound on interger variables (number)
+
+IntUpBound(tp)..  I(tp) =L= 1 ; (LHS = 0)
+     
+IntUpBound(wc)..  I(wc) =L= 1 ; (LHS = 0)
+     
+
+---- IntLowBound  =G=  Lower bound on integer variables (number)
+
+IntLowBound(tp)..  I(tp) =G= 0 ; (LHS = 0)
+     
+IntLowBound(wc)..  I(wc) =G= 0 ; (LHS = 0)
+     
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE WatSupplyRelaxed Using MIP From line 73
+
+
+---- I  binary decision to build or do prject from source src (1=yes 0=no)
+
+I(tp)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+   -90000       COST
+    -2000       MaxCap(tp)
+        1       IntUpBound(tp)
+        1       IntLowBound(tp)
+
+I(wc)
+                (.LO, .L, .UP, .M = 0, 0, 1, 0)
+   -35000       COST
+   -12000       MaxCap(wc)
+    -1000       MinReqUse(wc)
+        1       IntUpBound(wc)
+        1       IntLowBound(wc)
+
+
+---- X  volume of water provided by source src (ac-ft per year)
+
+X(tp)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -120       COST
+        1       MaxCap(tp)
+        1       MinReqUse(tp)
+        1       MeetDemand
+
+X(wc)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+     -150       COST
+        1       MaxCap(wc)
+        1       MinReqUse(wc)
+        1       MeetDemand
+
+
+---- TCOST  total capital and operating costs of supply actions ($)
+
+TCOST
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       COST
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE WatSupplyRelaxed Using MIP From line 73
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 1.000E+00, 2.000E+03] - Zero values observed as well
+Bound     [min, max] : [ 1.000E+00, 1.000E+00] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 9.000E+04]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE WatSupplyRelaxed Using MIP From line 73
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           6     SINGLE EQUATIONS           10
+BLOCKS OF VARIABLES           3     SINGLE VARIABLES            5
+NON ZERO ELEMENTS            18     DISCRETE VARIABLES          2
+
+
+GENERATION TIME      =        0.140 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE WatSupplyRelaxed Using MIP From line 73
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   WatSupplyRelaxed    OBJECTIVE  TCOST
+     TYPE    MIP                 DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  73
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE           330000.0000
+
+ RESOURCE USAGE, LIMIT          0.047 10000000000.000
+ ITERATION COUNT, LIMIT         0    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- MIP status (101): integer optimal solution.
+--- Cplex Time: 0.05sec (det. 0.03 ticks)
+
+--- Returning a primal only solution to GAMS (marginals all set to NA).
+--- Fixing integer variables and solving final LP...
+
+
+--- Fixed MIP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Proven optimal solution
+MIP Solution:       330000.000000    (0 iterations, 0 nodes)
+Final Solve:        330000.000000    (0 iterations)
+
+Best possible:      330000.000000
+Absolute gap:            0.000000
+Relative gap:            0.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU COST                .              .              .             1.0000      
+
+  COST  Total Cost ($) and objective function value
+
+---- EQU MaxCap  Maximum capacity of source when built (ac-ft per year)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp        -INF             .              .              .          
+wc        -INF             .              .              .          
+
+---- EQU MinReqUse  Minimum required use of source when built (ac-ft per year)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp          .          2000.0000        +INF             .          
+wc          .              .            +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU MeetDemand      2000.0000      2000.0000        +INF          120.0000      
+
+  MeetDemand  Meet demand (ac-ft per year)
+
+---- EQU IntUpBound  Upper bound on interger variables (number)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp        -INF            1.0000         1.0000          .          
+wc        -INF             .             1.0000          .          
+
+---- EQU IntLowBound  Lower bound on integer variables (number)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp          .             1.0000        +INF             .          
+wc          .              .            +INF             .          
+
+---- VAR I  binary decision to build or do prject from source src (1=yes 0=no)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp          .             1.0000         1.0000     90000.0000      
+wc          .              .             1.0000     35000.0000      
+
+---- VAR X  volume of water provided by source src (ac-ft per year)
+
+          LOWER          LEVEL          UPPER         MARGINAL
+
+tp          .          2000.0000        +INF             .          
+wc          .              .            +INF           30.0000      
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR TCOST             -INF       330000.0000        +INF             .          
+
+  TCOST  total capital and operating costs of supply actions ($)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/15/25 20:28:15 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+----     75 VARIABLE X.L  volume of water provided by source src (ac-ft per year)
+
+tp 2000.000
+
+
+----     75 VARIABLE I.L  binary decision to build or do prject from source src (1=yes 0=no)
+
+tp 1.000
+
+
+----     75 VARIABLE TCOST.L               =   330000.000  total capital and operating costs of supply actions ($)
+
+
+EXECUTION TIME       =       17.875 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\Ex6-3-integer.gms
+Output     C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\Ex6-3-integer.lst

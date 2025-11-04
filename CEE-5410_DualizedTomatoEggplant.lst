@@ -1,0 +1,398 @@
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+      CEE 6410 - Water Resources Systems Analysis
+      Example 2.1 from Bishop Et Al Text (https://digitalcommons.usu.edu/ecstatic_all/76/)
+      Modifies Example to add a labor constraint
+       
+      Formulate and solve the PRIMAL and DUALs of THE PROBLEM:
+       
+      An irrigated farm can be planted in two crops:  eggplants and tomatoes.  Data are as fol-lows:
+       
+      Seasonal Resource
+      Inputs or Profit        Crops        Resource
+      Availability
+              Eggplant        Tomatoes
+      Water        1x103 gal/plant        2x103 gal/plant      4x106 gal/year
+      Land        4 ft2/plant        3 ft2/plant               1.2x104 ft2
+      Labor         5hr/plant        2.5/hr plant              17,500 hours
+      Profit/plant        $6        $7
+                      Determine the optimal planting for the two crops.
+       
+      THE SOLUTION:
+      Uses General Algebraic Modeling System to Solve this Linear Program
+       
+      David E Rosenberg
+      david.rosenberg@usu.edu
+      September 20, 2020
+  27   
+  28  * 1. DEFINE the SETS
+  29  SETS plnt crops growing /Eggplant, Tomatoes/
+  30       res resources /Water, Land, Labor/;
+  31   
+  32  * 2. DEFINE input data
+  33  PARAMETERS
+  34     c(plnt) Objective function coefficients ($ per plant)
+  35           /Eggplant 6,
+  36           Tomatoes 7/
+  37     b(res) Right hand constraint values (per resource)
+  38            /Water 4000000,
+  39             Land  12000,
+  40             Labor 17500 /;
+  41   
+  42  TABLE A(plnt,res) Left hand side constraint coefficients
+  43                   Water    Land  Labor
+  44   Eggplant        1000      4      5
+  45   Tomatoes        2000      3      2.5 ;
+  46   
+  47  * 3. DEFINE the variables
+  48  VARIABLES X(plnt) plants planted (Number)
+  49            VPROFIT  total profit ($)
+  50            Y(res)  value of resources used (units specific to variable)
+  51            VREDCOST total reduced cost ($);
+  52   
+  53  * Non-negativity constraints
+  54  POSITIVE VARIABLES X,Y;
+  55   
+  56  * 4. COMBINE variables and data in equations
+  57  EQUATIONS
+  58     PROFIT_PRIMAL Total profit ($) and objective function value
+  59     RES_CONS_PRIMAL(res) Resource constraints
+  60     REDCOST_DUAL Reduced Cost ($) associated with using resources
+  61     RES_CONS_DUAL(plnt) Profit levels ;
+  62   
+  63  *Primal Equations
+  64  PROFIT_PRIMAL..                 VPROFIT =E= SUM(plnt,c(plnt)*X(plnt));
+  65  RES_CONS_PRIMAL(res) ..    SUM(plnt,A(plnt,res)*X(plnt)) =L= b(res);
+  66   
+  67  *Dual Equations
+  68  REDCOST_DUAL..                 VREDCOST =E= SUM(res,b(res)*Y(res));
+  69  RES_CONS_DUAL(plnt)..          sum(res,A(plnt,res)*Y(res)) =G= c(plnt);
+  70   
+  71  X.LO(plnt) = 5;
+  72   
+  73  * 5. DEFINE the MODELS
+  74  *PRIMAL model
+  75  MODEL PLANT_PRIMAL /PROFIT_PRIMAL, RES_CONS_PRIMAL/;
+  76  *Set the options file to print out range of basis information
+  77  PLANT_PRIMAL.optfile = 1;
+  78   
+  79  *DUAL model
+  80  MODEL PLANT_DUAL /REDCOST_DUAL, RES_CONS_DUAL/;
+  81   
+  82  * 6. SOLVE the MODELS
+  83  * Solve the PLANTING PRIMAL model using a Linear Programming Solver (see File=>Options=>Solvers)
+  84  *     to maximize VPROFIT
+  85  SOLVE PLANT_PRIMAL USING LP MAXIMIZING VPROFIT;
+  86   
+  87  * Solve the PLANTING DUAL model using a Linear Programming Solver (see File=>Options=>Solvers)
+  88  *     to maximize VPROFIT
+  89  SOLVE PLANT_DUAL USING LP MINIMIZING VREDCOST;
+  90  *Order does not matter!
+  91   
+  92  * 6. CLick File menu => RUN (F9) or Solve icon and examine solution report in .LST file
+  93   
+  94  * 7 . Dump all data and results to GAMS proprietary file storage .gdx and to Excel
+  95  Execute_Unload "Ex2-1Dual.gdx";
+  96  * Dump the gdx file to an Excel workbook
+  97  Execute "gdx2xls Ex2-1Dual.gdx"
+  98  * To open the GDX file in the GAMS IDE, select File => Open.
+  99  * In the Open window, set Filetype to .gdx and select the file.
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE PLANT_PRIMAL Using LP From line 85
+
+
+---- PROFIT_PRIMAL  =E=  Total profit ($) and objective function value
+
+PROFIT_PRIMAL..  - 6*X(Eggplant) - 7*X(Tomatoes) + VPROFIT =E= 0 ; (LHS = -65, INFES = 65 ****)
+     
+
+---- RES_CONS_PRIMAL  =L=  Resource constraints
+
+RES_CONS_PRIMAL(Water)..  1000*X(Eggplant) + 2000*X(Tomatoes) =L= 4000000 ; (LHS = 15000)
+     
+RES_CONS_PRIMAL(Land)..  4*X(Eggplant) + 3*X(Tomatoes) =L= 12000 ; (LHS = 35)
+     
+RES_CONS_PRIMAL(Labor)..  5*X(Eggplant) + 2.5*X(Tomatoes) =L= 17500 ; (LHS = 37.5)
+     
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE PLANT_PRIMAL Using LP From line 85
+
+
+---- X  plants planted (Number)
+
+X(Eggplant)
+                (.LO, .L, .UP, .M = 5, 5, +INF, 0)
+       -6       PROFIT_PRIMAL
+     1000       RES_CONS_PRIMAL(Water)
+        4       RES_CONS_PRIMAL(Land)
+        5       RES_CONS_PRIMAL(Labor)
+        0       (OLD LEVEL ****)
+
+X(Tomatoes)
+                (.LO, .L, .UP, .M = 5, 5, +INF, 0)
+       -7       PROFIT_PRIMAL
+     2000       RES_CONS_PRIMAL(Water)
+        3       RES_CONS_PRIMAL(Land)
+        2.5     RES_CONS_PRIMAL(Labor)
+        0       (OLD LEVEL ****)
+
+
+---- VPROFIT  total profit ($)
+
+VPROFIT
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       PROFIT_PRIMAL
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE PLANT_PRIMAL Using LP From line 85
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 1.200E+04, 4.000E+06] - Zero values observed as well
+Bound     [min, max] : [ 5.000E+00, 5.000E+00]
+Matrix    [min, max] : [ 1.000E+00, 2.000E+03]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE PLANT_PRIMAL Using LP From line 85
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            4
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            3  2 projected
+NON ZERO ELEMENTS             9
+
+
+GENERATION TIME      =        0.093 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE PLANT_PRIMAL Using LP From line 85
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PLANT_PRIMAL        OBJECTIVE  VPROFIT
+     TYPE    LP                  DIRECTION  MAXIMIZE
+     SOLVER  CPLEX               FROM LINE  85
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE            20000.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         3    2147483647
+*** This solver runs with a community license.
+
+*** Error Cannot open parameter file "C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\cplex.opt"
+*** Error Error code = 2; No such file or directory
+
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:        20000.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU PROFIT_PR~          .              .              .             1.0000      
+
+  PROFIT_PRIMAL  Total profit ($) and objective function value
+
+---- EQU RES_CONS_PRIMAL  Resource constraints
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Water        -INF      4000000.0000   4000000.0000         0.0020      
+Land         -INF        12000.0000     12000.0000         1.0000      
+Labor        -INF        14000.0000     17500.0000          .          
+
+---- VAR X  plants planted (Number)
+
+                LOWER          LEVEL          UPPER         MARGINAL
+
+Eggplant         5.0000      2400.0000        +INF             .          
+Tomatoes         5.0000       800.0000        +INF             .          
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR VPROFIT           -INF        20000.0000        +INF             .          
+
+  VPROFIT  total profit ($)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Equation Listing    SOLVE PLANT_DUAL Using LP From line 89
+
+
+---- REDCOST_DUAL  =E=  Reduced Cost ($) associated with using resources
+
+REDCOST_DUAL..  - 4000000*Y(Water) - 12000*Y(Land) - 17500*Y(Labor) + VREDCOST =E= 0 ; (LHS = 0)
+     
+
+---- RES_CONS_DUAL  =G=  Profit levels
+
+RES_CONS_DUAL(Eggplant)..  1000*Y(Water) + 4*Y(Land) + 5*Y(Labor) =G= 6 ; (LHS = 0, INFES = 6 ****)
+     
+RES_CONS_DUAL(Tomatoes)..  2000*Y(Water) + 3*Y(Land) + 2.5*Y(Labor) =G= 7 ; (LHS = 0, INFES = 7 ****)
+     
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 8
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Column Listing      SOLVE PLANT_DUAL Using LP From line 89
+
+
+---- Y  value of resources used (units specific to variable)
+
+Y(Water)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+  -4.000000E+6  REDCOST_DUAL
+     1000       RES_CONS_DUAL(Eggplant)
+     2000       RES_CONS_DUAL(Tomatoes)
+
+Y(Land)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+   -12000       REDCOST_DUAL
+        4       RES_CONS_DUAL(Eggplant)
+        3       RES_CONS_DUAL(Tomatoes)
+
+Y(Labor)
+                (.LO, .L, .UP, .M = 0, 0, +INF, 0)
+   -17500       REDCOST_DUAL
+        5       RES_CONS_DUAL(Eggplant)
+        2.5     RES_CONS_DUAL(Tomatoes)
+
+
+---- VREDCOST  total reduced cost ($)
+
+VREDCOST
+                (.LO, .L, .UP, .M = -INF, 0, +INF, 0)
+        1       REDCOST_DUAL
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 9
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE PLANT_DUAL Using LP From line 89
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [ 6.000E+00, 7.000E+00] - Zero values observed as well
+Bound     [min, max] : [        NA,        NA] - Zero values observed as well
+Matrix    [min, max] : [ 1.000E+00, 4.000E+06]
+
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 10
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE PLANT_DUAL Using LP From line 89
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS           2     SINGLE EQUATIONS            3
+BLOCKS OF VARIABLES           2     SINGLE VARIABLES            4
+NON ZERO ELEMENTS            10
+
+
+GENERATION TIME      =        0.000 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 11
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE PLANT_DUAL Using LP From line 89
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   PLANT_DUAL          OBJECTIVE  VREDCOST
+     TYPE    LP                  DIRECTION  MINIMIZE
+     SOLVER  CPLEX               FROM LINE  89
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      1 Optimal
+**** OBJECTIVE VALUE            20000.0000
+
+ RESOURCE USAGE, LIMIT          0.000 10000000000.000
+ ITERATION COUNT, LIMIT         2    2147483647
+*** This solver runs with a community license.
+--- GMO setup time: 0.00s
+--- GMO memory 0.50 Mb (peak 0.50 Mb)
+--- Dictionary memory 0.00 Mb
+--- Cplex 22.1.2.0 link memory 0.00 Mb (peak 0.00 Mb)
+--- Starting Cplex
+
+
+--- LP status (1): optimal.
+--- Cplex Time: 0.00sec (det. 0.01 ticks)
+
+
+Optimal solution found
+Objective:        20000.000000
+
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- EQU REDCOST_D~          .              .              .             1.0000      
+
+  REDCOST_DUAL  Reduced Cost ($) associated with using resources
+
+---- EQU RES_CONS_DUAL  Profit levels
+
+                LOWER          LEVEL          UPPER         MARGINAL
+
+Eggplant         6.0000         6.0000        +INF         2400.0000      
+Tomatoes         7.0000         7.0000        +INF          800.0000      
+
+---- VAR Y  value of resources used (units specific to variable)
+
+             LOWER          LEVEL          UPPER         MARGINAL
+
+Water          .             0.0020        +INF             .          
+Land           .             1.0000        +INF             .          
+Labor          .              .            +INF         3500.0000      
+
+                           LOWER          LEVEL          UPPER         MARGINAL
+
+---- VAR VREDCOST          -INF        20000.0000        +INF             .          
+
+  VREDCOST  total reduced cost ($)
+
+
+**** REPORT SUMMARY :        0     NONOPT
+                             0 INFEASIBLE
+                             0  UNBOUNDED
+GAMS 51.1.0  2d039df5 Sep 13, 2025          WEX-WEI x86 64bit/MS Windows - 10/03/25 15:04:33 Page 12
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+E x e c u t i o n
+
+
+EXECUTION TIME       =       13.390 SECONDS      4 MB  51.1.0 2d039df5 WEX-WEI
+
+
+USER: Course License                                 G250902+0003Ac-GEN
+      Utah State University                                     DCE4709
+      License for teaching and research at degree granting institutions
+
+
+**** FILE SUMMARY
+
+Input      C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_DualizedTomatoEggplant.gms
+Output     C:\Users\grill\OneDrive - USU\2025_FALL\CEE-5410_WaterResourcesSystemAnalysis\GitHubRepository\CEE-5410_Hilton\CEE-5410_DualizedTomatoEggplant.lst
