@@ -1,21 +1,30 @@
-from PySide6.QtWidgets import QApplication, QFileDialog
-from ui.main_window import MainWindow
+import sys, os
+from PySide6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from dem_loader import DEM
+from tile_cache import TileCache
+from viewer.dem_viewer import DEMViewer
+import config
 
-def run():
-    app = QApplication([])
+def main():
+    app = QApplication(sys.argv)
 
-    path, _ = QFileDialog.getOpenFileName(
-        None,
-        "Open DEM",
-        "",
-        "DEM files (*.tif *.img *.hgt);;All files (*)"
+    last_folder = config.load_last_folder()
+    filepath, _ = QFileDialog.getOpenFileName(
+        None, "Open DEM", last_folder, filter="TIFF Files (*.tif *.tiff)"
     )
-    if not path:
-        return
+    if not filepath:
+        sys.exit(0)
+    config.save_last_folder(os.path.dirname(filepath))
 
-    win = MainWindow(path)
-    win.show()
-    app.exec()
+    dem = DEM(filepath)
+    tile_cache = TileCache(dem)
+    window = QMainWindow()
+    viewer = DEMViewer(dem, tile_cache)
+    window.setCentralWidget(viewer)
+    window.resize(800, 600)
+    window.show()
+
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
-    run()
+    main()
